@@ -1,0 +1,24 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: init-scripts
+  generateName: init-scripts-
+data:
+  init-minio.sh: |-
+    #!/usr/bin/env sh
+    # Create bucket
+    mc alias set minio ${MINIO_ENDPOINT} ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}
+    if [ $? -gt 0 ]; then exit 1; fi
+    echo "Creating buckets on minio alias ..."
+    mc mb minio/fedora
+    echo "Creation completed"
+  push-model.sh: |-
+    echo "Pushing model ..."
+    mc alias set minio ${MINIO_ENDPOINT} ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}
+    mc mb minio/rhods
+    set -e
+    curl -LJ ${NOTEBOOKS_GIT_URL}/tarball/main -o /tmp/model.tar.gz
+    mkdir /tmp/model
+    tar xzf /tmp/model.tar.gz -C /tmp/model --strip-components 1
+    mc cp /tmp/model/models/ minio/rhods/models
+    echo "Model pushed into bucket"

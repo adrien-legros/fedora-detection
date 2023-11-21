@@ -1,0 +1,20 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  annotations:
+    openshift.io/display-name: fedora-detection
+    serving.kserve.io/deploymentMode: ModelMesh
+  labels:
+    name: fedora-detection
+    opendatahub.io/dashboard: "true"
+  name: fedora-detection
+spec:
+  predictor:
+    model:
+      modelFormat:
+        name: onnx
+        version: "1"
+      runtime: fedora-detection
+      storage:
+        key: aws-connection-s3-creds
+        path: models/fedora.onnx

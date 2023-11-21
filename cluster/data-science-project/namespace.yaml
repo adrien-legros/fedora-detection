@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/display-name: fedora-detection
+  labels:
+    kubernetes.io/metadata.name: fedora-detection
+    modelmesh-enabled: "true"
+    opendatahub.io/dashboard: "true"
+  name: fedora-detection

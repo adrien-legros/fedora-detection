@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Detection Webcam</title>
+</head>
+<body>
+    <video id="webcam" width="640" height="480" autoplay></video>
+    <div id="boundingBoxContainer"></div>
+    <canvas id="outputCanvas" width="640" height="480" hidden></canvas>
+    <script src="/static/app.js"></script>
+    <style>
+        /* Add your CSS styles here */
+        .bounding-box {
+            border: 2px solid red;
+            background: transparent;
+        }
+        .label {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: red;
+            color: white;
+            padding: 2px 5px;
+            font-size: 12px;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,7 @@
+resources:
+ - namespace.yaml
+ - data-connection.yaml
+ - networkpolicy.yaml
+ - dspa.yaml
+ - servingruntime.yaml
+ - inferenceservice.yaml

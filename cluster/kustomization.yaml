@@ -1,0 +1,4 @@
+namespace: fedora-detection
+resources:
+ - data-science-project
+ - jobs

@@ -1,0 +1,68 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-init
+  generateName: minio-init-
+spec:
+  parallelism: 1    
+  completions: 1
+  activeDeadlineSeconds: 1800 
+  backoffLimit: 10
+  template:         
+    metadata:
+      name: minio-init
+    spec:
+      serviceAccountName: jobs
+      restartPolicy: OnFailure
+      volumes:
+        - name: init-scripts
+          configMap:
+            name: init-scripts
+            defaultMode: 0777 
+      containers:
+        - name: minio-init
+          image: quay.io/alegros/minio-client:rhods-mnist
+          command: ['/scripts/init-minio.sh']
+          volumeMounts:
+            - name: init-scripts
+              mountPath: /scripts
+          env:
+            - name: MINIO_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: aws-connection-s3-creds
+                  key: AWS_S3_ENDPOINT
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef: 
+                  name: aws-connection-s3-creds
+                  key: AWS_ACCESS_KEY_ID
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef: 
+                  name: aws-connection-s3-creds
+                  key: AWS_SECRET_ACCESS_KEY
+        - name: push-model-to-bucket
+          image: quay.io/alegros/minio-client:rhods-mnist
+          command: ['/scripts/push-model.sh']
+          env:
+            - name: NOTEBOOKS_GIT_URL
+              value: https://github.com/adrien-legros/fedora-detection
+            - name: MINIO_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: aws-connection-s3-creds
+                  key: AWS_S3_ENDPOINT
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef: 
+                  name: aws-connection-s3-creds
+                  key: AWS_ACCESS_KEY_ID
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef: 
+                  name: aws-connection-s3-creds
+                  key: AWS_SECRET_ACCESS_KEY
+          volumeMounts:
+            - name: init-scripts
+              mountPath: /scripts
