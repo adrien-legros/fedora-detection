@@ -66,3 +66,27 @@ spec:
           volumeMounts:
             - name: init-scripts
               mountPath: /scripts
+        - name: push-dataset-to-bucket
+          image: quay.io/alegros/minio-client:rhods-mnist
+          command: ['/scripts/push-dataset.sh']
+          env:
+            - name: DATASET_GIT_URL
+              value: https://github.com/adrien-legros/datasets
+            - name: MINIO_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: aws-connection-s3-creds
+                  key: AWS_S3_ENDPOINT
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef: 
+                  name: aws-connection-s3-creds
+                  key: AWS_ACCESS_KEY_ID
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef: 
+                  name: aws-connection-s3-creds
+                  key: AWS_SECRET_ACCESS_KEY
+          volumeMounts:
+            - name: init-scripts
+              mountPath: /scripts

@@ -1,0 +1,264 @@
+{
+  "doc_type": "pipeline",
+  "version": "3.0",
+  "json_schema": "http://api.dataplatform.ibm.com/schemas/common-pipeline/pipeline-flow/pipeline-flow-v3-schema.json",
+  "id": "elyra-auto-generated-pipeline",
+  "primary_pipeline": "primary",
+  "pipelines": [
+    {
+      "id": "primary",
+      "nodes": [
+        {
+          "id": "bd234b29-e898-4b29-8dfd-fbf3abffb1b8",
+          "type": "execution_node",
+          "op": "execute-python-node",
+          "app_data": {
+            "component_parameters": {
+              "dependencies": [
+                "requirements.txt"
+              ],
+              "include_subdirectories": false,
+              "outputs": [],
+              "env_vars": [],
+              "kubernetes_pod_annotations": [],
+              "kubernetes_pod_labels": [],
+              "kubernetes_secrets": [],
+              "kubernetes_shared_mem_size": {},
+              "kubernetes_tolerations": [],
+              "mounted_volumes": [],
+              "filename": "scripts/data-processing.py"
+            },
+            "label": "",
+            "ui_data": {
+              "label": "data-processing.py",
+              "image": "/notebook/fedora-detection/myworkbench/static/elyra/python.svg",
+              "x_pos": 120,
+              "y_pos": 190,
+              "description": "Run Python script"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              }
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "35923a88-31d6-4035-8b9b-6c2f03ea357e",
+          "type": "execution_node",
+          "op": "execute-python-node",
+          "app_data": {
+            "component_parameters": {
+              "dependencies": [
+                "requirements.txt",
+                "configuration.yaml"
+              ],
+              "include_subdirectories": false,
+              "outputs": [
+                "run.tar.gz"
+              ],
+              "env_vars": [],
+              "kubernetes_pod_annotations": [],
+              "kubernetes_pod_labels": [],
+              "kubernetes_secrets": [],
+              "kubernetes_shared_mem_size": {},
+              "kubernetes_tolerations": [],
+              "mounted_volumes": [],
+              "filename": "scripts/train.py"
+            },
+            "label": "",
+            "ui_data": {
+              "label": "train.py",
+              "image": "/notebook/fedora-detection/myworkbench/static/elyra/python.svg",
+              "x_pos": 354,
+              "y_pos": 189,
+              "description": "Run Python script"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              },
+              "links": [
+                {
+                  "id": "9c99049e-ddca-405e-a094-f6787d424bd0",
+                  "node_id_ref": "bd234b29-e898-4b29-8dfd-fbf3abffb1b8",
+                  "port_id_ref": "outPort"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "763c4352-d012-4cd1-bbf8-9e6e9596179b",
+          "type": "execution_node",
+          "op": "execute-python-node",
+          "app_data": {
+            "component_parameters": {
+              "dependencies": [
+                "requirements.txt",
+                "configuration.yaml"
+              ],
+              "include_subdirectories": false,
+              "outputs": [
+                "yolov5/runs/val/*"
+              ],
+              "env_vars": [],
+              "kubernetes_pod_annotations": [],
+              "kubernetes_pod_labels": [],
+              "kubernetes_secrets": [],
+              "kubernetes_shared_mem_size": {},
+              "kubernetes_tolerations": [],
+              "mounted_volumes": [],
+              "filename": "scripts/validation.py"
+            },
+            "label": "",
+            "ui_data": {
+              "label": "validation.py",
+              "image": "/notebook/fedora-detection/myworkbench/static/elyra/python.svg",
+              "x_pos": 583,
+              "y_pos": 188,
+              "description": "Run Python script"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              },
+              "links": [
+                {
+                  "id": "019085cd-c32d-41d8-a8bc-48485453b79b",
+                  "node_id_ref": "35923a88-31d6-4035-8b9b-6c2f03ea357e",
+                  "port_id_ref": "outPort"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "app_data": {
+        "ui_data": {
+          "comments": []
+        },
+        "version": 8,
+        "runtime_type": "KUBEFLOW_PIPELINES",
+        "properties": {
+          "name": "scripts-Copy1",
+          "runtime": "Data Science Pipelines",
+          "pipeline_defaults": {
+            "kubernetes_shared_mem_size": {},
+            "mounted_volumes": [
+              {
+                "path": "/opt/app-root/src/data",
+                "pvc_name": "data",
+                "read_only": false
+              },
+              {
+                "path": "/dev/shm",
+                "pvc_name": "torch-shared-memory",
+                "read_only": false
+              }
+            ],
+            "kubernetes_tolerations": [],
+            "kubernetes_pod_labels": [],
+            "kubernetes_pod_annotations": [],
+            "env_vars": [],
+            "kubernetes_secrets": [
+              {
+                "env_var": "AWS_ACCESS_KEY_ID",
+                "name": "aws-connection-s3-creds",
+                "key": "AWS_ACCESS_KEY_ID"
+              },
+              {
+                "env_var": "AWS_SECRET_ACCESS_KEY",
+                "name": "aws-connection-s3-creds",
+                "key": "AWS_SECRET_ACCESS_KEY"
+              },
+              {
+                "env_var": "AWS_S3_ENDPOINT",
+                "name": "aws-connection-s3-creds",
+                "key": "AWS_S3_ENDPOINT"
+              },
+              {
+                "env_var": "AWS_S3_BUCKET",
+                "name": "aws-connection-s3-creds",
+                "key": "AWS_S3_BUCKET"
+              }
+            ],
+            "runtime_image": "quay.io/modh/runtime-images@sha256:7dd23e58291cad7a0ab4a8e04bda06492f2c027eb33b226358380db58dcdd60b"
+          },
+          "pipeline_parameters": []
+        }
+      },
+      "runtime_ref": ""
+    }
+  ],
+  "schemas": []
+}

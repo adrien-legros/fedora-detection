@@ -1,0 +1,11 @@
+namespace: fedora-detection
+resources:
+ - namespace.yaml
+ - data-connection.yaml
+ - networkpolicy.yaml
+ - dspa.yaml
+ - jobs/
+ - servingruntime.yaml
+ - inferenceservice.yaml
+ - browser-fedora-detection.yaml
+ - data-volume.yaml

@@ -1,0 +1,23 @@
+namespace: redhat-ods-monitoring
+resources:
+  - datasource.yaml
+configMapGenerator:
+- name: grafana-token
+  namespace: redhat-ods-monitoring
+  envs:
+  - grafana-token.env
+  options:
+    disableNameSuffixHash: true
+replacements:
+- source:
+    kind: ConfigMap
+    name: grafana-token
+    namespace: redhat-ods-monitoring
+    fieldPath: data.token
+  targets:
+  - select:
+      kind: GrafanaDatasource
+      namespace: redhat-ods-monitoring
+      name: prometheus
+    fieldPaths:
+    - spec.datasource.secureJsonData.httpHeaderValue1

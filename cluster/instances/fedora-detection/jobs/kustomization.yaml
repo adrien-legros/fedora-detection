@@ -1,3 +1,4 @@
+namespace: fedora-detection
 resources:
   - serviceaccount.yaml
   - scripts.yaml

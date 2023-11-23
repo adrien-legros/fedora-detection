@@ -1,0 +1,11 @@
+namespace: gitea
+
+resources:
+  - pipeline-volume.yaml
+  - serviceaccount.yaml
+  - gitea-tekton-interceptor.yaml
+  - cluster-trigger-binding.yaml
+  - trigger-template.yaml
+  - event-listener.yaml
+  - gitea-comment-task.yaml
+  - pipeline.yaml

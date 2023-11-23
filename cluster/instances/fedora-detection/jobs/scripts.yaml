@@ -13,12 +13,25 @@ data:
     mc mb minio/fedora
     echo "Creation completed"
   push-model.sh: |-
+    #!/usr/bin/env sh
     echo "Pushing model ..."
     mc alias set minio ${MINIO_ENDPOINT} ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}
-    mc mb minio/rhods
+    mc mb minio/fedora
     set -e
     curl -LJ ${NOTEBOOKS_GIT_URL}/tarball/main -o /tmp/model.tar.gz
     mkdir /tmp/model
     tar xzf /tmp/model.tar.gz -C /tmp/model --strip-components 1
-    mc cp /tmp/model/models/ minio/rhods/models
+    mc cp --recursive /tmp/model/model/inference minio/fedora/models
     echo "Model pushed into bucket"
+  push-dataset.sh: |-
+    #!/usr/bin/env sh
+    echo "Pushing dataset ..."
+    mc alias set minio ${MINIO_ENDPOINT} ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}
+    mc mb minio/fedora
+    set -e
+    curl -LJ ${DATASET_GIT_URL}/tarball/fedora-detection -o /tmp/dataset.tar.gz
+    mkdir /tmp/dataset
+    tar xzf /tmp/dataset.tar.gz -C /tmp/dataset --strip-components 1
+    cat /tmp/dataset/* > /tmp/dataset/dataset.tar.gz
+    mc cp /tmp/dataset/dataset.tar.gz minio/fedora/data/dataset.tar.gz
+    echo "Dataset pushed into bucket"

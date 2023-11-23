@@ -1,0 +1,10 @@
+# Dataset paths relative to the yolov5 folder
+train: /opt/app-root/src/data/data/images/train
+val:   /opt/app-root/src/data/data/images/val
+test:  /opt/app-root/src/data/data/images/test
+
+# Number of classes
+nc: 1
+
+# Class names 0 - redhat
+names: ['redhat']

@@ -1,0 +1,21 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: prometheus
+spec:
+  datasource:
+    jsonData:
+      httpHeaderName1: 'Authorization'
+      timeInterval: 5s
+      tlsSkipVerify: true
+    access: proxy
+    editable: true
+    isDefault: true
+    name: prometheus
+    type: prometheus
+    url: 'https://rhods-model-monitoring'
+    secureJsonData:
+      httpHeaderValue1: 'Bearer ${BEARER_TOKEN}'
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana-a

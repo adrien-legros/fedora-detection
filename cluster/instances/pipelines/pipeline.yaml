@@ -1,0 +1,107 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ds-pipeline-trigger
+spec:
+  params:
+    - name: GIT_REPO
+      type: string
+    - name: GIT_REVISION
+      type: string
+    - name: ISSUE_NB
+      type: string
+  workspaces:
+    - name: tekton-pvc
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: tekton-pvc
+      params:
+        - name: url
+          value: $(params.GIT_REPO)
+        - name: revision
+          value: $(params.GIT_REVISION)
+
+    - name: start-ds-pipeline
+      params:
+        - name: DIGEST
+          value: $(tasks.fetch-repository.results.commit)
+      taskSpec:
+        params:
+          - name: DIGEST
+            type: string
+        steps:
+        - image: quay.io/alegros/elyra-runtime:latest
+          script: |
+            echo "DIGEST: $(params.DIGEST)"
+            elyra-metadata create runtimes \
+              --schema_name kfp \
+              --display_name "DataScience Runtime" \
+              --api_endpoint "http://ds-pipeline-pipelines-definition.fedora-detection:8888" \
+              --auth_type "NO_AUTHENTICATION" \
+              --engine Tekton \
+              --cos_endpoint "http://minio-pipelines-definition.fedora-detection:9000" \
+              --cos_auth_type "USER_CREDENTIALS" \
+              --cos_username minio \
+              --cos_password minio123 \
+              --cos_bucket fedora
+            elyra-pipeline submit scripts.pipeline | grep -oP '/fedora/\K\S*' > "$(results.run-id.path)"
+            cat $(results.run-id.path)       
+        results:
+          - name: run-id
+            type: string
+      workspaces:
+        - name: output
+          workspace: tekton-pvc
+      runAfter:
+        - fetch-repository
+
+    - name: wait-ds-pipeline
+      params:
+        - name: SCRIPT
+          value: oc -n gitea wait --timeout=-1s --for=condition=Succeeded=true pipelinerun --selector=pipelines.kubeflow.org/run_name=$(tasks.start-ds-pipeline.results.run-id)
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      runAfter:
+        - start-ds-pipeline
+
+    - name: gitea-comment-pr
+      params:
+        - name: ISSUE_NB
+          value: $(params.ISSUE_NB)
+        - name: RUN_ID
+          value: $(tasks.start-ds-pipeline.results.run-id)
+        - name: DASHBOARD
+          value: TODO
+        - name: accuracy
+          value: $(tasks.mlflow-get-metrics.results.accuracy)
+        - name: loss
+          value: $(tasks.mlflow-get-metrics.results.loss)
+        - name: lr
+          value: $(tasks.mlflow-get-metrics.results.lr)
+        - name: val_acc
+          value: $(tasks.mlflow-get-metrics.results.val_acc)
+        - name: val_loss
+          value: $(tasks.mlflow-get-metrics.results.val_loss)
+      taskRef:
+        name: gitea-comment-pr
+        kind: ClusterTask
+      runAfter:
+        - wait-ds-pipeline
+
+# image-registry.openshift-image-registry.svc.cluster.local:5000/openshift/python:3.8-ubi8
+    # - name: gitea-status
+    #   taskRef:
+    #     name: openshift-client
+    #     kind: ClusterTask
+    #   runAfter:
+    #     - build
+    #   params:
+    #   - name: SCRIPT
+    #     value: |
+    #       oc new-app --docker-image $(params.IMAGE_NAME)
