@@ -17,4 +17,4 @@ spec:
       runtime: fedora-detection
       storage:
         key: aws-connection-s3-creds
-        path: model/registry/best.onnx
+        path: models/registry/best.onnx
