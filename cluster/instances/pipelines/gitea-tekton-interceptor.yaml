@@ -100,4 +100,4 @@ spec:
   clientConfig:
     service:
       name: gitea-interceptor
-      namespace: gitea
+      namespace: ci-cd

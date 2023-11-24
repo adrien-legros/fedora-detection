@@ -8,7 +8,7 @@ spec:
   project: default
   source:
     repoURL: http://gitea-http.ci-cd:3000/data-scientist-1/fedora-detection
-    targetRevision: main
+    targetRevision: prod
     path: ./model/gitops/inference
   destination:
     server: https://kubernetes.default.svc
