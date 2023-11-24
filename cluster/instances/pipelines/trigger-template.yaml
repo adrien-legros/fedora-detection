@@ -32,6 +32,10 @@ spec:
           value: $(tt.params.ISSUE_NB)
       pipelineRef:
         name: ds-pipeline-trigger
+      serviceAccountName: pipeline
+      taskRunSpecs:
+        - pipelineTaskName: start-ds-pipeline
+          taskServiceAccountName: pipeline-admin
       timeout: 1h0m0s
       workspaces:
         - name: tekton-pvc

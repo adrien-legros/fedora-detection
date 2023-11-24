@@ -19,26 +19,26 @@ data:
             sleep 5
         done;
     }
-    wait_for_exists "app=gitea,role=server" "gitea"
-    oc -n gitea wait --timeout=10m --for=condition=Ready=true po -l app=gitea,role=server
-    wait_for_exists "eventlistener=ds-pipeline-trigger-listener" "mnist"
-    oc -n mnist wait --timeout=10m --for=condition=Ready=true po -l eventlistener=ds-pipeline-trigger-listener
+    wait_for_exists "app=gitea,role=server" "ci-cd"
+    oc -n ci-cd wait --timeout=10m --for=condition=Ready=true po -l app=gitea,role=server
+    wait_for_exists "eventlistener=ds-pipeline-trigger-listener" "ci-cd"
+    oc -n ci-cd wait --timeout=10m --for=condition=Ready=true po -l eventlistener=ds-pipeline-trigger-listener
   hook-creation.sh: |
     #!/usr/bin/env sh
     # Variables
     OWNER=data-scientist-1
     OWNER_PWD=rhods
-    REPO=digit-recognition
-    GITEA_ENDPOINT="http://gitea-http.gitea.svc.cluster.local:3000"
+    REPO=fedora-detection
+    GITEA_ENDPOINT="http://gitea-http.ci-cd.svc.cluster.local:3000"
     MIGRATE_API_ENDPOINT=${GITEA_ENDPOINT}/api/v1/repos/migrate
     HOOK_API_ENDPOINT=${GITEA_ENDPOINT}/api/v1/repos/${OWNER}/${REPO}/hooks
-    EL_ENDPOINT="http://el-ds-pipeline-trigger-listener.mnist.svc.cluster.local:8080"
+    EL_ENDPOINT="http://el-ds-pipeline-trigger-listener.ci-cd.svc.cluster.local:8080"
     # Clone git repo
     migrate_payload() {
         cat <<EOF
     {
-        "clone_addr": "https://github.com/adrien-legros/rhods-mnist-model",
-        "repo_name": "digit-recognition",
+        "clone_addr": "https://github.com/adrien-legros/fedora-detection.git",
+        "repo_name": "fedora-detection",
         "repo_owner": "data-scientist-1"
     }
     EOF

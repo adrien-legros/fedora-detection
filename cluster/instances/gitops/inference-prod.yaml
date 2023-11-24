@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pipelinerun
+  namespace: openshift-gitops
+spec:
+  applicationInstanceLabelKey: argocd.argoproj.io/instance
+  project: default
+  source:
+    repoURL: http://gitea-http.ci-cd:3000/data-scientist-1/fedora-detection
+    targetRevision: main
+    path: ./model/gitops/inference
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: fedora-detection
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=false

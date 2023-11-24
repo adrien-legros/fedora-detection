@@ -210,9 +210,12 @@
         "version": 8,
         "runtime_type": "KUBEFLOW_PIPELINES",
         "properties": {
-          "name": "scripts-Copy1",
+          "name": "scripts",
           "runtime": "Data Science Pipelines",
           "pipeline_defaults": {
+            "kubernetes_pod_annotations": [],
+            "kubernetes_pod_labels": [],
+            "kubernetes_tolerations": [],
             "kubernetes_shared_mem_size": {},
             "mounted_volumes": [
               {
@@ -226,9 +229,6 @@
                 "read_only": false
               }
             ],
-            "kubernetes_tolerations": [],
-            "kubernetes_pod_labels": [],
-            "kubernetes_pod_annotations": [],
             "env_vars": [],
             "kubernetes_secrets": [
               {
@@ -254,7 +254,26 @@
             ],
             "runtime_image": "quay.io/modh/runtime-images@sha256:7dd23e58291cad7a0ab4a8e04bda06492f2c027eb33b226358380db58dcdd60b"
           },
-          "pipeline_parameters": []
+          "pipeline_parameters": [
+            {
+              "name": "nb_epochs",
+              "description": "Number of max epochs",
+              "default_value": {
+                "type": "String",
+                "value": "1"
+              },
+              "required": true
+            },
+            {
+              "name": "model_tag",
+              "description": "Model tag",
+              "default_value": {
+                "type": "String",
+                "value": "latest"
+              },
+              "required": true
+            }
+          ]
         }
       },
       "runtime_ref": ""

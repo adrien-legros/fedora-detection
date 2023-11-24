@@ -1,8 +1,8 @@
-namespace: gitea
+namespace: ci-cd
 helmCharts:
 - name: gitea
   releaseName: gitea
   repo: https://dl.gitea.io/charts/
   version: 8.3.0
-  namespace: gitea
+  namespace: ci-cd
   valuesFile: values.yaml

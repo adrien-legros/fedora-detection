@@ -2,3 +2,4 @@ resources:
   - openshift-ai.yaml
   - openshift-pipelines.yaml
   - grafana.yaml
+  - openshift-gitops.yaml

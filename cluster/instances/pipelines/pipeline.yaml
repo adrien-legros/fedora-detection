@@ -10,6 +10,14 @@ spec:
       type: string
     - name: ISSUE_NB
       type: string
+    - name: GIT_REPO_NAME
+      type: string
+    - name: MINIO_PUBLIC_ENDPOINT
+      type: string
+      default: https://minio-fedora-detection.apps.cluster-kfffr.kfffr.sandbox2809.opentlc.com/
+    - name: BUCKET_NAME
+      type: string
+      default: fedora
   workspaces:
     - name: tekton-pvc
   tasks:
@@ -26,7 +34,7 @@ spec:
         - name: revision
           value: $(params.GIT_REVISION)
 
-    - name: start-ds-pipeline
+    - name: tag-pipelinerun
       params:
         - name: DIGEST
           value: $(tasks.fetch-repository.results.commit)
@@ -35,22 +43,10 @@ spec:
           - name: DIGEST
             type: string
         steps:
-        - image: quay.io/alegros/elyra-runtime:latest
+        - image: quay.io/alegros/yq:latest
           script: |
-            echo "DIGEST: $(params.DIGEST)"
-            elyra-metadata create runtimes \
-              --schema_name kfp \
-              --display_name "DataScience Runtime" \
-              --api_endpoint "http://ds-pipeline-pipelines-definition.fedora-detection:8888" \
-              --auth_type "NO_AUTHENTICATION" \
-              --engine Tekton \
-              --cos_endpoint "http://minio-pipelines-definition.fedora-detection:9000" \
-              --cos_auth_type "USER_CREDENTIALS" \
-              --cos_username minio \
-              --cos_password minio123 \
-              --cos_bucket fedora
-            elyra-pipeline submit scripts.pipeline | grep -oP '/fedora/\K\S*' > "$(results.run-id.path)"
-            cat $(results.run-id.path)       
+            FN=$(ls /workspace/output/model/gitops/pipelinerun | head -1)
+            yq -i '.metadata.name="$(params.DIGEST)"' /workspace/output/model/gitops/pipelinerun/$FN
         results:
           - name: run-id
             type: string
@@ -60,48 +56,34 @@ spec:
       runAfter:
         - fetch-repository
 
-    - name: wait-ds-pipeline
+    - name: start-ds-pipeline
       params:
         - name: SCRIPT
-          value: oc -n gitea wait --timeout=-1s --for=condition=Succeeded=true pipelinerun --selector=pipelines.kubeflow.org/run_name=$(tasks.start-ds-pipeline.results.run-id)
+          value: oc -n fedora-detection apply -f /workspace/manifest-dir/model/gitops/pipelinerun
       taskRef:
         name: openshift-client
         kind: ClusterTask
+      workspaces:
+        - name: manifest-dir
+          workspace: tekton-pvc
       runAfter:
-        - start-ds-pipeline
+        - tag-pipelinerun
 
     - name: gitea-comment-pr
       params:
         - name: ISSUE_NB
           value: $(params.ISSUE_NB)
-        - name: RUN_ID
-          value: $(tasks.start-ds-pipeline.results.run-id)
-        - name: DASHBOARD
-          value: TODO
-        - name: accuracy
-          value: $(tasks.mlflow-get-metrics.results.accuracy)
-        - name: loss
-          value: $(tasks.mlflow-get-metrics.results.loss)
-        - name: lr
-          value: $(tasks.mlflow-get-metrics.results.lr)
-        - name: val_acc
-          value: $(tasks.mlflow-get-metrics.results.val_acc)
-        - name: val_loss
-          value: $(tasks.mlflow-get-metrics.results.val_loss)
+        - name: MINIO_PUBLIC_ENDPOINT
+          value: $(params.MINIO_PUBLIC_ENDPOINT)
+        - name: BUCKET_NAME
+          value: $(params.BUCKET_NAME)
+        - name: GIT_REPO_NAME
+          value: $(params.GIT_REPO_NAME)
       taskRef:
         name: gitea-comment-pr
         kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: tekton-pvc
       runAfter:
-        - wait-ds-pipeline
-
-# image-registry.openshift-image-registry.svc.cluster.local:5000/openshift/python:3.8-ubi8
-    # - name: gitea-status
-    #   taskRef:
-    #     name: openshift-client
-    #     kind: ClusterTask
-    #   runAfter:
-    #     - build
-    #   params:
-    #   - name: SCRIPT
-    #     value: |
-    #       oc new-app --docker-image $(params.IMAGE_NAME)
+        - start-ds-pipeline

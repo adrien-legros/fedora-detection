@@ -1,4 +1,4 @@
-namespace: gitea
+namespace: ci-cd
 resources:
   - ./namespace.yaml
   - ./scc-binding.yaml

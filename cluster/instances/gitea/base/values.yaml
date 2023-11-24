@@ -8,7 +8,7 @@ gitea:
     security:
       MIN_PASSWORD_LENGTH: 5
     server:
-      ROOT_URL: http://gitea-http.gitea:3000
+      ROOT_URL: http://gitea-http.ci-cd:3000
 statefulset:
   labels:
     role: server

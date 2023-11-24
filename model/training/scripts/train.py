@@ -48,7 +48,7 @@ if __name__ == "__main__":
     export = "python yolov5/export.py --weights yolov5/runs/train/" + exp + "/weights/best.pt --include onnx --imgsz 640 --opset 16"
     subprocess.run(export.split())
     model = "yolov5/runs/train/" + exp + "/weights/best.onnx"
-    s3_path = "models/demos/fedora.onnx"
+    s3_path = "models/registry/" + os.environ.get("model_tag", "1") + ".onnx"
     s3_con = init_s3_connection()
     bucket_name = os.environ.get("AWS_S3_BUCKET", "fedora")
     tar = "tar -czf run.tar.gz yolov5/runs/train/"
