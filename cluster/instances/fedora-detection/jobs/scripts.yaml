@@ -23,7 +23,7 @@ data:
     curl -LJ ${NOTEBOOKS_GIT_URL}/tarball/main -o /tmp/model.tar.gz
     mkdir /tmp/model
     tar xzf /tmp/model.tar.gz -C /tmp/model --strip-components 1
-    mc cp /tmp/model/model/registry/best.onnx minio/fedora/models/best.onnx
+    mc cp /tmp/model/model/registry/best.onnx minio/fedora/models/registry/best.onnx
     echo "Model pushed into bucket"
   push-dataset.sh: |-
     #!/usr/bin/env sh
