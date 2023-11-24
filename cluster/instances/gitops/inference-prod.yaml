@@ -7,7 +7,7 @@ spec:
   applicationInstanceLabelKey: argocd.argoproj.io/instance
   project: default
   source:
-    repoURL: http://gitea-http.gitea:3000/data-scientist-1/fedora-detection
+    repoURL: http://gitea-http.ci-cd:3000/data-scientist-1/fedora-detection
     targetRevision: main
     path: ./model/gitops/inference
   destination:
