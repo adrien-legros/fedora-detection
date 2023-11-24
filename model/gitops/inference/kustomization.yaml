@@ -1,3 +1,21 @@
 resources:
   - inferenceservice.yaml
   - servingruntime.yaml
+configMapGenerator:
+- name: prod-model-tag
+  namespace: ci-cd
+  envs:
+  - tag.env
+  options:
+    disableNameSuffixHash: true
+replacements:
+- source:
+    kind: ConfigMap
+    name: prod-model-tag
+    fieldPath: data.tag
+  targets:
+  - select:
+      kind: InferenceService
+      name: fedora-detection
+    fieldPaths:
+    - spec.predictor.model.storage.path

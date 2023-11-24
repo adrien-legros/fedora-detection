@@ -7,12 +7,18 @@ spec:
   applicationInstanceLabelKey: argocd.argoproj.io/instance
   project: default
   source:
-    repoURL: http://gitea-http.ci-cd:3000/data-scientist-1/fedora-detection
+    repoURL: https://github.com/adrien-legros/fedora-detection
     targetRevision: main
     path: ./model/gitops/inference
   destination:
     server: https://kubernetes.default.svc
-    namespace: fedora-detection
+    namespace: fedora-detection-prod
   syncPolicy:
     syncOptions:
-    - CreateNamespace=false
+    - CreateNamespace=true
+    automated:
+      selfHeal: true
+      prune: false
+    managedNamespaceMetadata:
+      labels:
+        argocd.argoproj.io/managed-by: openshift-gitops
