@@ -1,0 +1,69 @@
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  name: ai-opendemo-9mcp9-worker-gpu-eu-west-3a
+  namespace: openshift-machine-api
+  labels:
+    machine.openshift.io/cluster-api-cluster: ai-opendemo-9mcp9
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: ai-opendemo-9mcp9
+      machine.openshift.io/cluster-api-machineset: ai-opendemo-9mcp9-worker-gpu-eu-west-3a
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: ai-opendemo-9mcp9
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: ai-opendemo-9mcp9-worker-gpu-eu-west-3a
+    spec:
+      lifecycleHooks: {}
+      metadata:
+        labels:
+          gpu: nvidia-t4
+      taints:
+        - key: ssa-team-france.redhat.com/gpu
+          effect: NoSchedule
+      providerSpec:
+        value:
+          userDataSecret:
+            name: worker-user-data
+          placement:
+            availabilityZone: eu-west-3a
+            region: eu-west-3
+          credentialsSecret:
+            name: aws-cloud-credentials
+          instanceType: g4dn.xlarge
+          metadata:
+            creationTimestamp: null
+          blockDevices:
+            - ebs:
+                encrypted: true
+                iops: 0
+                kmsKey:
+                  arn: ''
+                volumeSize: 120
+                volumeType: gp3
+          securityGroups:
+            - filters:
+                - name: 'tag:Name'
+                  values:
+                    - ai-opendemo-9mcp9-worker-sg
+          kind: AWSMachineProviderConfig
+          metadataServiceOptions: {}
+          tags:
+            - name: kubernetes.io/cluster/ai-opendemo-9mcp9
+              value: owned
+          deviceIndex: 0
+          ami:
+            id: ami-0700abf2efe60e203
+          subnet:
+            filters:
+              - name: 'tag:Name'
+                values:
+                  - ai-opendemo-9mcp9-private-eu-west-3a
+          apiVersion: machine.openshift.io/v1beta1
+          iamInstanceProfile:
+            id: ai-opendemo-9mcp9-worker-profile

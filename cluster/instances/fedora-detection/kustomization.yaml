@@ -9,3 +9,4 @@ resources:
  - inferenceservice.yaml
  - browser-fedora-detection.yaml
  - data-volume.yaml
+ - pipeline-volume.yaml

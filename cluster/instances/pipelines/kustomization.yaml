@@ -1,12 +1,4 @@
-namespace: ci-cd
-
 resources:
-  - pipeline-volume.yaml
-  - gitea-sa.yaml
-  - gitea-tekton-interceptor.yaml
-  - cluster-trigger-binding.yaml
-  - trigger-template.yaml
-  - event-listener.yaml
-  - gitea-comment-task.yaml
-  - pipeline-admin.yaml
-  - pipeline.yaml
+  - core
+  - training
+  - edge

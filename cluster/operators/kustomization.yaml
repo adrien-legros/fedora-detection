@@ -3,3 +3,5 @@ resources:
   - openshift-pipelines.yaml
   - grafana.yaml
   - openshift-gitops.yaml
+  - nfd.yaml
+  - gpu-operator.yaml

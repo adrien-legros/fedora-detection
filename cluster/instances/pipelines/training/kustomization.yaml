@@ -1,0 +1,9 @@
+namespace: ci-cd
+
+resources:
+  - pipeline-volume.yaml
+  - cluster-trigger-binding.yaml
+  - trigger-template.yaml
+  - event-listener.yaml
+  - gitea-comment-task.yaml
+  - pipeline.yaml

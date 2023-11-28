@@ -1,3 +1,6 @@
 resources:
  - fedora-detection
  - monitoring
+ - gitea
+ - pipelines
+ - gitops
