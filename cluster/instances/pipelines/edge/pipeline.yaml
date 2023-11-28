@@ -7,7 +7,7 @@ spec:
   params:
     - name: MODEL_VERSION
       type: string
-      default: 
+      default: latest
     - name: BUCKET_NAME
       type: string
       default: fedora
@@ -23,7 +23,7 @@ spec:
       description: 'Image name w/o tag, MODEL_VERSION is used for the tag.'
   resources: []
   workspaces:
-    - name: init-container-build-space
+    - name: edge-pipeline-pvc
   tasks:
     - name: git-clone
       params:
@@ -46,54 +46,30 @@ spec:
         name: git-clone
       workspaces:
         - name: output
-          workspace: init-container-build-space
+          workspace: edge-pipeline-pvc
+    
     - name: download-model
       params:
-        - name: SCRIPT
-          value: |-
-            set -x
-            aws configure list
-            aws s3 --no-verify-ssl cp $1 $2 --endpoint-url $3
-        - name: ARGS
-          value:
-            - 's3://$(params.BUCKET_NAME)/$(params.MODEL_VERSION)/model.data'
-            - /workspace/source/container-images/model-container/model.data
-            - $(params.S3_ENDPOINT_URL)
-      runAfter:
-        - git-clone
+        - name: S3_ENDPOINT_URL
+          value: $(params.S3_ENDPOINT_URL)
+        - name: MODEL_VERSION
+          value: $(params.MODEL_VERSION)
       taskSpec:
         params:
-          - default: aws $@
-            description: The AWS script to run
-            name: SCRIPT
+          - name: S3_ENDPOINT_URL
             type: string
-          - default:
-              - help
-            description: AWS cli arguments to be passed
-            name: ARGS
-            type: array
+          - name: MODEL_VERSION
+            type: string
         steps:
-          - args:
-              - $(params.ARGS)
-            image: 'quay.io/rbo/ubi-awscli:latest'
-            name: awscli
-            volumeMounts:
-              - name: aws-credentials
-                mountPath: /aws/
-            resources: {}
-            env:
-              - name: AWS_SHARED_CREDENTIALS_FILE
-                value: /aws/credentials
-            script: $(params.SCRIPT)
-        volumes:
-          - name: aws-credentials
-            secret:
-              secretName: aws-credentials
-        workspaces:
-          - name: source
+        - image: registry.redhat.io/ubi9/ubi:latest
+          script: |
+            curl $(params.S3_ENDPOINT_URL)/models/registry/$(params.MODEL_VERSION)/model.onnx --output /workspace/output/applications/remote-detection/model/model.pt
       workspaces:
-        - name: source
-          workspace: init-container-build-space
+        - name: output
+          workspace: edge-pipeline-pvc
+      runAfter:
+        - git-clone
+
     - name: build-and-push-to-edge
       params:
         - name: IMAGE
@@ -104,9 +80,9 @@ spec:
         - name: STORAGE_DRIVER
           value: vfs
         - name: DOCKERFILE
-          value: /workspace/source/container-images/model-container/Containerfile
+          value: /workspace/source/applications/remote-detection/Containerfile
         - name: CONTEXT
-          value: /workspace/source/container-images/model-container/
+          value: /workspace/source/applications/remote-detection
         - name: TLSVERIFY
           value: 'false'
         - name: FORMAT
@@ -120,5 +96,5 @@ spec:
         name: buildah
       workspaces:
         - name: source
-          workspace: init-container-build-space
+          workspace: edge-pipeline-pvc
   finally: []

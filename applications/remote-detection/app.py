@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 source = 0
 camera = cv2.VideoCapture(source)
-model = torch.hub.load('yolov5', 'custom', path='model/best.pt', source='local') 
+model = torch.hub.load('yolov5', 'custom', path='model/model.pt', source='local') 
 model.conf = float(os.getenv('CONF_THRESHOLD', 0.65))
 
 def predict(im):
