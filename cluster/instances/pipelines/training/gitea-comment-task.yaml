@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1beta1
+kind: ClusterTask
+metadata:
+  name: gitea-comment-pr
+spec:
+  description: >-
+    Comment gitea PR - HTTP
+  params:
+  - name: MINIO_PUBLIC_ENDPOINT
+    type: string
+  - name: BUCKET_NAME
+    type: string
+  - name: GITEA_USERNAME
+    type: string
+    default: data-scientist-1
+  - name: GITEA_PWD
+    type: string
+    default: rhods
+  - name: GITEA_SVC
+    type: string
+    default: gitea-http
+  - name: GITEA_NS
+    type: string
+    default: ci-cd
+  - name: GIT_REPO_NAME
+    type: string
+  - name: ISSUE_NB
+    type: string
+    description: KFP run id
+  steps:
+  - name: post-comment
+    image: registry.redhat.io/ubi9/ubi:latest
+    script: |
+      #!/bin/sh
+      RUN_ID=$(cat /workspace/output/model/gitops/pipelinerun/* | grep -oP "cos-directory\s'\K\w*-\d*" | head -1)
+      cat << EOF > body.json
+        {
+          "body": "#Pipeline run completed\n![p_curve]($(params.MINIO_PUBLIC_ENDPOINT)/$(params.BUCKET_NAME)/${RUN_ID}/yolov5/runs/val/exp/P_curve.png)![f1_curve]($(params.MINIO_PUBLIC_ENDPOINT)/$(params.BUCKET_NAME)/${RUN_ID}/yolov5/runs/val/exp/F1_curve.png)"
+        }
+      EOF
+      curl -X POST -H "Content-Type: application/json" -d @./body.json http://$(params.GITEA_USERNAME):$(params.GITEA_PWD)@$(params.GITEA_SVC).$(params.GITEA_NS):3000/api/v1/repos/data-scientist-1/$(params.GIT_REPO_NAME)/issues/$(params.ISSUE_NB)/comments
+  workspaces:
+    - description: Optional workspace
+      name: output
+      optional: true

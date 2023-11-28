@@ -1,0 +1,4 @@
+resources:
+  - datasciencecluster.yaml
+  - nfd.yaml
+  - gpu-operator.yaml

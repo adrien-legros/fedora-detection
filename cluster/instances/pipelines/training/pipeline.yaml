@@ -1,0 +1,89 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ds-pipeline-trigger
+spec:
+  params:
+    - name: GIT_REPO
+      type: string
+    - name: GIT_REVISION
+      type: string
+    - name: ISSUE_NB
+      type: string
+    - name: GIT_REPO_NAME
+      type: string
+    - name: MINIO_PUBLIC_ENDPOINT
+      type: string
+      default: https://minio-fedora-detection.apps.ai-opendemo.sandbox1478.opentlc.com/
+    - name: BUCKET_NAME
+      type: string
+      default: fedora
+  workspaces:
+    - name: tekton-pvc
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: tekton-pvc
+      params:
+        - name: url
+          value: $(params.GIT_REPO)
+        - name: revision
+          value: $(params.GIT_REVISION)
+
+    - name: tag-pipelinerun
+      params:
+        - name: DIGEST
+          value: $(tasks.fetch-repository.results.commit)
+      taskSpec:
+        params:
+          - name: DIGEST
+            type: string
+        steps:
+        - image: quay.io/alegros/yq:latest
+          script: |
+            FN=$(ls /workspace/output/model/gitops/pipelinerun | head -1)
+            yq -i '.metadata.name="$(params.DIGEST)"' /workspace/output/model/gitops/pipelinerun/$FN
+        results:
+          - name: run-id
+            type: string
+      workspaces:
+        - name: output
+          workspace: tekton-pvc
+      runAfter:
+        - fetch-repository
+
+    - name: start-ds-pipeline
+      params:
+        - name: SCRIPT
+          value: oc -n fedora-detection apply -f /workspace/manifest-dir/model/gitops/pipelinerun
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      workspaces:
+        - name: manifest-dir
+          workspace: tekton-pvc
+      runAfter:
+        - tag-pipelinerun
+
+    - name: gitea-comment-pr
+      params:
+        - name: ISSUE_NB
+          value: $(params.ISSUE_NB)
+        - name: MINIO_PUBLIC_ENDPOINT
+          value: $(params.MINIO_PUBLIC_ENDPOINT)
+        - name: BUCKET_NAME
+          value: $(params.BUCKET_NAME)
+        - name: GIT_REPO_NAME
+          value: $(params.GIT_REPO_NAME)
+      taskRef:
+        name: gitea-comment-pr
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: tekton-pvc
+      runAfter:
+        - start-ds-pipeline

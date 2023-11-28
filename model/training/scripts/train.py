@@ -43,14 +43,15 @@ if __name__ == "__main__":
     subprocess.run(pip_headless.split())
     subprocess.run(cmd.split())
     exp = get_last_exp()
-    #pip_uninstall = "pip uninstall -qy opencv-python opencv-python-headless"
-    #pip_headless = "pip install -q opencv-python-headless"
     export = "python yolov5/export.py --weights yolov5/runs/train/" + exp + "/weights/best.pt --include onnx --imgsz 640 --opset 16"
     subprocess.run(export.split())
     model = "yolov5/runs/train/" + exp + "/weights/best.onnx"
-    s3_path = "models/registry/" + os.environ.get("model_tag", "1") + ".onnx"
+    model_pt = "yolov5/runs/train/" + exp + "/weights/best.pt"
+    s3_path = "models/registry/" + os.environ.get("model_tag", "latest") + "/model.onnx"
+    s3_path_pt = "models/registry/" + os.environ.get("model_tag", "latest") + "/model.pt"
     s3_con = init_s3_connection()
     bucket_name = os.environ.get("AWS_S3_BUCKET", "fedora")
     tar = "tar -czf run.tar.gz yolov5/runs/train/"
     subprocess.run(tar.split())
     s3_con.upload_file(model, bucket_name, s3_path)
+    s3_con.upload_file(model_pt, bucket_name, s3_path_pt)
