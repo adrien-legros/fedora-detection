@@ -1,0 +1,4 @@
+namespace: ci-cd
+
+resources:
+  - pipeline.yaml

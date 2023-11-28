@@ -11,13 +11,13 @@ spec:
     - name: BUCKET_NAME
       type: string
       default: fedora
-    - default: 'http:/'
+    - default: 'http//minio-pipelines-definition.fedora-detection:9000'
       name: S3_ENDPOINT_URL
       type: string
     - default: 'http://gitea-http.ci-cd:3000/data-scientist-1/fedora-detection'
       name: git_repository_url
       type: string
-    - default: default-registry.cluster.local/ci-cd/edge-detection
+    - default: http://image-registry.openshift-image-registry:5000/ci-cd/edge-detection
       name: target_image_url
       type: string
       description: 'Image name w/o tag, MODEL_VERSION is used for the tag.'
