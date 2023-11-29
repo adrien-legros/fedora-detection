@@ -1,6 +1,7 @@
 resources:
   - inferenceservice.yaml
   - servingruntime.yaml
+  - inference-gpu.yaml
 configMapGenerator:
 - name: prod-model-tag
   namespace: ci-cd
@@ -14,6 +15,11 @@ replacements:
     name: prod-model-tag
     fieldPath: data.tag
   targets:
+  - select:
+      kind: InferenceService
+      name: fedora-detection
+    fieldPaths:
+    - spec.predictor.model.storage.path
   - select:
       kind: InferenceService
       name: fedora-detection
