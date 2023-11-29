@@ -31,7 +31,7 @@
             "label": "",
             "ui_data": {
               "label": "data-processing.py",
-              "image": "/notebook/fedora-detection/myworkbench/static/elyra/python.svg",
+              "image": "/notebook/fedora-detection/model-dev/static/elyra/python.svg",
               "x_pos": 120,
               "y_pos": 190,
               "description": "Run Python script"
@@ -72,6 +72,10 @@
           "op": "execute-python-node",
           "app_data": {
             "component_parameters": {
+              "pipeline_parameters": [
+                "nb_epochs",
+                "model_tag"
+              ],
               "dependencies": [
                 "requirements.txt",
                 "configuration.yaml"
@@ -92,7 +96,7 @@
             "label": "",
             "ui_data": {
               "label": "train.py",
-              "image": "/notebook/fedora-detection/myworkbench/static/elyra/python.svg",
+              "image": "/notebook/fedora-detection/model-dev/static/elyra/python.svg",
               "x_pos": 354,
               "y_pos": 189,
               "description": "Run Python script"
@@ -160,7 +164,7 @@
             "label": "",
             "ui_data": {
               "label": "validation.py",
-              "image": "/notebook/fedora-detection/myworkbench/static/elyra/python.svg",
+              "image": "/notebook/fedora-detection/model-dev/static/elyra/python.svg",
               "x_pos": 583,
               "y_pos": 188,
               "description": "Run Python script"
@@ -213,10 +217,6 @@
           "name": "scripts",
           "runtime": "Data Science Pipelines",
           "pipeline_defaults": {
-            "kubernetes_pod_annotations": [],
-            "kubernetes_pod_labels": [],
-            "kubernetes_tolerations": [],
-            "kubernetes_shared_mem_size": {},
             "mounted_volumes": [
               {
                 "path": "/opt/app-root/src/data",
@@ -229,7 +229,10 @@
                 "read_only": false
               }
             ],
-            "env_vars": [],
+            "kubernetes_pod_annotations": [],
+            "kubernetes_tolerations": [],
+            "kubernetes_shared_mem_size": {},
+            "kubernetes_pod_labels": [],
             "kubernetes_secrets": [
               {
                 "env_var": "AWS_ACCESS_KEY_ID",
@@ -252,7 +255,8 @@
                 "key": "AWS_S3_BUCKET"
               }
             ],
-            "runtime_image": "quay.io/modh/runtime-images@sha256:7dd23e58291cad7a0ab4a8e04bda06492f2c027eb33b226358380db58dcdd60b"
+            "env_vars": [],
+            "runtime_image": "quay.io/modh/runtime-images@sha256:6ebdcb9486fbad7feecc8cd66a75b414fec9d3604db188a1c8fed7a0187f40ba"
           },
           "pipeline_parameters": [
             {
