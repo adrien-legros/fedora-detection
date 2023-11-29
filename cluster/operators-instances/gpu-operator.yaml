@@ -21,8 +21,8 @@ spec:
       enabled: true
   devicePlugin:
     config:
-      default: ""
-      name: ""
+      default: tesla-t4
+      name: time-slicing-config
     enabled: true
   driver:
     certConfig:

@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: push-to-edge
@@ -11,17 +11,16 @@ spec:
     - name: BUCKET_NAME
       type: string
       default: fedora
-    - default: 'http//minio-pipelines-definition.fedora-detection:9000'
+    - default: 'http://minio-fedora-detection.apps.ai-opendemo.sandbox1478.opentlc.com'
       name: S3_ENDPOINT_URL
       type: string
-    - default: 'http://gitea-http.ci-cd:3000/data-scientist-1/fedora-detection'
+    - default: 'https://github.com/adrien-legros/fedora-detection.git'
       name: git_repository_url
       type: string
-    - default: http://image-registry.openshift-image-registry:5000/ci-cd/edge-detection
+    - default: image-registry.openshift-image-registry:5000/ci-cd/edge-detection
       name: target_image_url
       type: string
       description: 'Image name w/o tag, MODEL_VERSION is used for the tag.'
-  resources: []
   workspaces:
     - name: edge-pipeline-pvc
   tasks:
@@ -30,7 +29,7 @@ spec:
         - name: url
           value: $(params.git_repository_url)
         - name: revision
-          value: main
+          value: prod
         - name: submodules
           value: 'true'
         - name: depth
@@ -76,9 +75,7 @@ spec:
           value: '$(params.target_image_url):$(params.MODEL_VERSION)'
         - name: BUILDER_IMAGE
           value: >-
-            registry.redhat.io/rhel8/buildah@sha256:23fb7971ea6ac4aaaaa1139473a602df0df19222a3b5a76b551b2b9ddd92e927
-        - name: STORAGE_DRIVER
-          value: vfs
+             registry.redhat.io/rhel8/buildah@sha256:55f5c7d88c77e1ab5a2ab8e877172b2b66cb196e21f10dc45148470d0ee8bbae
         - name: DOCKERFILE
           value: /workspace/source/applications/remote-detection/Containerfile
         - name: CONTEXT
@@ -88,7 +85,7 @@ spec:
         - name: FORMAT
           value: oci
         - name: BUILD_EXTRA_ARGS
-          value: '--platform linux/arm64/v8'
+          value: '--platform linux/arm64'
       runAfter:
         - download-model
       taskRef:
