@@ -22,6 +22,6 @@ replacements:
     - spec.predictor.model.storage.path
   - select:
       kind: InferenceService
-      name: fedora-detection
+      name: fedora-detection-gpu
     fieldPaths:
     - spec.predictor.model.storage.path
