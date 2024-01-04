@@ -13,4 +13,4 @@ spec:
   - name: GIT_REPO_FULL_NAME
     value: $(body.repository.full_name)
   - name: ISSUE_NB
-    value: $(body.pull_request.id)
+    value: $(body.pull_request.number)

@@ -1,5 +1,4 @@
 resources:
-  - datasciencecluster.yaml
   - nfd.yaml
   - gpu-operator.yaml
   - time-slicing-config.yaml

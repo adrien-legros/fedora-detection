@@ -33,6 +33,7 @@ data:
     MIGRATE_API_ENDPOINT=${GITEA_ENDPOINT}/api/v1/repos/migrate
     HOOK_API_ENDPOINT=${GITEA_ENDPOINT}/api/v1/repos/${OWNER}/${REPO}/hooks
     EL_ENDPOINT="http://el-ds-pipeline-trigger-listener.ci-cd.svc.cluster.local:8080"
+    ARM_BUILDER_EL_ENDPOINT="https://el-push-to-edge-listener-ci-cd.apps.SNO_DOMAIN_NAME/" # CHANGEME with the event listener endpoint from SNO cluster
     # Clone git repo
     migrate_payload() {
         cat <<EOF
@@ -51,13 +52,15 @@ data:
         "active": true,
         "config": {
             "content_type": "json",
-            "url": "${EL_ENDPOINT}"
+            "url": "$1"
         },
         "events": [
-            "pull_request"
+            "$2"
         ],
         "type": "gitea"
     }
     EOF
     }
-    curl -X POST -H "Content-Type: application/json" -u ${OWNER}:${OWNER_PWD} --data "$(hook_payload)" ${HOOK_API_ENDPOINT}
+    curl -X POST -H "Content-Type: application/json" -u ${OWNER}:${OWNER_PWD} --data "$(hook_payload ${EL_ENDPOINT} pull_request)" ${HOOK_API_ENDPOINT}
+    # Add the remote image builder webhook
+    curl -X POST -H "Content-Type: application/json" -u ${OWNER}:${OWNER_PWD} --data "$(hook_payload ${ARM_BUILDER_EL_ENDPOINT} pull_request_review)" ${HOOK_API_ENDPOINT}

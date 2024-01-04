@@ -1,5 +1,0 @@
-namespace: ci-cd
-
-resources:
-  - deamonset.yaml
-  - pipeline.yaml

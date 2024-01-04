@@ -1,7 +1,4 @@
 resources:
-  - openshift-ai.yaml
-  - openshift-pipelines.yaml
-  - grafana.yaml
-  - openshift-gitops.yaml
+  - base
   - nfd.yaml
   - gpu-operator.yaml

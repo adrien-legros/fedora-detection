@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "==1.24.2"
+opencv_python_headless = "==4.7.0.72"
+PyYAML = "==6.0"
+torch = {file = "https://download.pytorch.org/whl/cpu/torch-2.1.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl"}
+torchvision = {file = "https://download.pytorch.org/whl/torchvision-0.16.0-cp311-cp311-linux_aarch64.whl"}
+flask = "*"
+
+[requires]
+python_version = "3.11"
+

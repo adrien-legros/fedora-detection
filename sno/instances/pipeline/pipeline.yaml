@@ -1,0 +1,97 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: push-to-edge
+  namespace: ci-cd
+spec:
+  params:
+    - name: MODEL_VERSION
+      type: string
+      default: latest
+    - name: BUCKET_NAME
+      type: string
+      default: fedora
+    - default: 'http://minio-fedora-detection.apps.CLUSTER_DOMAIN_NAME/' # CHANGEME with the S3 public endpoint from your OCP cluster
+      name: S3_ENDPOINT_URL
+      type: string
+    - default: 'https://github.com/adrien-legros/fedora-detection.git' # CHANGEME with the git repo url. It should be the gitea route endpoint from the full OCP cluster/
+      name: git_repository_url
+      type: string
+    - default: image-registry.openshift-image-registry:5000/ci-cd/edge-detection
+      name: target_image_url
+      type: string
+      description: 'Image name w/o tag, MODEL_VERSION is used for the tag.'
+  workspaces:
+    - name: edge-pipeline-pvc
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: $(params.git_repository_url)
+        - name: revision
+          value: prod
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'true'
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: edge-pipeline-pvc
+    
+    - name: download-model
+      params:
+        - name: S3_ENDPOINT_URL
+          value: $(params.S3_ENDPOINT_URL)
+        - name: MODEL_VERSION
+          value: $(params.MODEL_VERSION)
+      taskSpec:
+        params:
+          - name: S3_ENDPOINT_URL
+            type: string
+          - name: MODEL_VERSION
+            type: string
+        steps:
+        - image: registry.redhat.io/ubi9/ubi:latest
+          script: |
+            curl $(params.S3_ENDPOINT_URL)/models/registry/$(params.MODEL_VERSION)/model.onnx --output /workspace/output/applications/remote-detection/model/model.pt
+      workspaces:
+        - name: output
+          workspace: edge-pipeline-pvc
+      runAfter:
+        - git-clone
+
+    - name: build-and-push-to-edge
+      params:
+        - name: IMAGE
+          value: '$(params.target_image_url):$(params.MODEL_VERSION)'
+        - name: BUILDER_IMAGE
+          value: >-
+             registry.redhat.io/rhel8/buildah@sha256:55f5c7d88c77e1ab5a2ab8e877172b2b66cb196e21f10dc45148470d0ee8bbae
+        - name: DOCKERFILE
+          value: /workspace/source/applications/remote-detection/Containerfile
+        - name: CONTEXT
+          value: /workspace/source/applications/remote-detection
+        - name: TLSVERIFY
+          value: 'false'
+        - name: FORMAT
+          value: oci
+        - name: BUILD_EXTRA_ARGS
+          value: '--platform linux/arm64'
+      runAfter:
+        - download-model
+      taskRef:
+        kind: ClusterTask
+        name: buildah
+      workspaces:
+        - name: source
+          workspace: edge-pipeline-pvc
+  finally: []

@@ -1,6 +1,0 @@
-namespace: ci-cd
-
-resources:
-  - gitea-sa.yaml
-  - gitea-tekton-interceptor.yaml
-  - pipeline-admin.yaml
