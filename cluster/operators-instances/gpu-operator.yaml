@@ -9,7 +9,7 @@ spec:
     updateStrategy: RollingUpdate
     tolerations:
       - effect: NoSchedule
-        key: ssa-team-france.redhat.com/gpu
+        key: restrictedaccess
         operator: Exists
   dcgm:
     enabled: true

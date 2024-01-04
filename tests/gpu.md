@@ -15,10 +15,6 @@ kind: Pod
 metadata:
   name: cuda-vectoradd
 spec:
-  tolerations:
-    - effect: NoSchedule
-      key: ssa-team-france.redhat.com/gpu
-      operator: Exists
   restartPolicy: OnFailure
   containers:
   - name: cuda-vectoradd
@@ -49,10 +45,6 @@ spec:
       labels:
         app: time-slicing-verification
     spec:
-      tolerations:
-        - key: ssa-team-france.redhat.com/gpu
-          operator: Exists
-          effect: NoSchedule
       containers:
         - name: cuda-sample-vector-add
           image: "nvcr.io/nvidia/k8s/cuda-sample:vectoradd-cuda11.7.1-ubuntu20.04"

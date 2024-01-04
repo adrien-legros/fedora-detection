@@ -24,7 +24,7 @@ spec:
         labels:
           gpu: nvidia-t4
       taints:
-        - key: ssa-team-france.redhat.com/gpu
+        - key: nvidia.com/gpu
           effect: NoSchedule
       providerSpec:
         value:

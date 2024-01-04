@@ -38,6 +38,7 @@ spec:
       containers:
       - name: remote-camera-detection
         image: quay.io/alegros/remote-camera-detection:v2 # CHANGEME with the image created automatically by your SNO arm cluster.
+        imagePullPolicy: Always
         securityContext:
           privileged: true
         ports:

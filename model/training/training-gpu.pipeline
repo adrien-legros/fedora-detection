@@ -233,7 +233,7 @@
             ],
             "kubernetes_tolerations": [
               {
-                "key": "ssa-team-france.redhat.com/gpu",
+                "key": "nvidia.com/gpu",
                 "operator": "Exists",
                 "effect": "NoSchedule"
               }
