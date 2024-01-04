@@ -1,6 +1,6 @@
 # MLOps and compute acceleration with Openshift AI
 
-Leverage Openshift AI (RHOAI) to create and deploy anywhere a fedora detection model. Use MLOps to automate the model training and deployement. Accelerate compute and inference using a GPU. This demo has been recorded during a Red Hat EMEA Open Demo and is [available here](https://www.youtube.com/watch?v=jAzWuNJRYGA).
+Leverage Openshift AI (RHOAI) to create and deploy anywhere a fedora detection model. Use MLOps to automate the model training and deployment. Accelerate compute and inference using a GPU. This demo has been recorded during a Red Hat [EMEA Open Demo](https://www.redhat.com/fr/events/open-demos-emea) and is [available here](https://www.youtube.com/watch?v=jAzWuNJRYGA).
 
 ## Table of contents
 
@@ -29,19 +29,19 @@ Three clusters are used for this demo:
 
 - A OpenShift Container Platform cluster with a node containing a Nvidia GPU. GPU is optionnal
 - A Single Node Openshift (SNO) on an ARM architecture to build container images with the embeded model
-- Microshift for the edge container orchestration platform
+- Microshift as the edge container orchestration platform
 
-### The Openshift cluster
+### The OpenShift Container Platform (OCP) cluster
 
 #### Prerequisites
 
 - An OpenShift Container Platform cluster 4.12 or greater
-- (Optionnal) A node with a GPU is available. A [machineset example](./cluster/config/machineset.yaml) is available if your cluster if running on AWS. You can run this demo without it.
+- (Optional) A node with a GPU is available. A [machineset example](./cluster/config/machineset.yaml) is available if your cluster if running on AWS. You can run this demo without it.
 
 #### Customization
 
 Adapt [this pipeline manifest](./cluster/instances/pipelines/training/pipeline.yaml) to fit your environement. Search for the keyword `CHANGEME`.  
-Adapt [the git webhooks](./cluster/instances/gitea/custom/scripts.yaml) so that the container build on your arm cluster is automatically trigger on the pull request approval. Search for the keyword `CHANGEME`. You will need the domain of the SNO cluster but you can change it later.
+Adapt [the git webhook](./cluster/instances/gitea/custom/scripts.yaml) so that the container build on your arm cluster is automatically trigger on the pull request approval. Search for the keyword `CHANGEME`. You will need the domain of the SNO cluster but you can change it later.
 
 #### Run
 
@@ -95,11 +95,13 @@ oc apply -k ./sno/instances
 
 We will assume that the edge device is connected to internet and is able to pull from a specific contianer registry. In a disconnected / offline envirnoment you may want to embed your application within the OS. Deployment options are described [in the documentation](https://access.redhat.com/documentation/en-us/red_hat_build_of_microshift/4.14/html/running_applications/index).
 
-**Disclaimer**: Neither the operating system nor the Raspberry Pi is supported by Red Hat. To enable support, you will need a RHEL 9.2 as the OS, a [supported bare metal hardware](https://catalog.redhat.com/hardware/search?c_catalog_channel=Edge%20System&p=1) or a [supported hypervisor](https://access.redhat.com/solutions/certified-hypervisors).
+**Disclaimer**: Neither the operating system nor the Raspberry Pi is supported by Red Hat. To enable support, you will need a RHEL 9.2 or greater as the OS, a [supported bare metal hardware](https://catalog.redhat.com/hardware/search?c_catalog_channel=Edge%20System&p=1) or a [supported hypervisor](https://access.redhat.com/solutions/certified-hypervisors).
 
 1. OS installation: Fedora IoT is used as the OS. An installation guide is [available here](https://www.redhat.com/sysadmin/fedora-iot-raspberry-pi).  
 2. Microshift deployment: [This guide](https://medium.com/@ben.swinney_ce/openshift-raspberry-pi-2e78f2990395) can be used to deploy microshift once the OS is properly installed.
-3. Application deployment: Deploy the application that streams a wired camera and that has the model embeded. Adapt [this manifest](./edge/app.yaml) replacing the deployment image with the one created from your SNO cluster. Search for the keyword `CHANGEME`. Use the default Kubernetes mechanism such as pull policies to trigger the deployment of the new versions.
+3. Application deployment: Deploy the application that streams a wired camera and that has the model embeded. Adapt [this manifest](./edge/app.yaml) replacing the deployment image with the one created from your SNO cluster. Search for the keyword `CHANGEME`. Run `oc apply -f ./edge/app.yaml` on your edge device to deploy the application.
+
+The deployment uses an image pull policy to deploy the new versions of the app. It pulls a new version every time the image digest changes. Further work can be done here to automatically updates the pods on a new push to the container registry.
 
 ## Sources
 
