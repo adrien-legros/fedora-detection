@@ -13,10 +13,10 @@ spec:
     - name: BUCKET_NAME
       type: string
       default: fedora
-    - default: 'http://minio-fedora-detection.apps.cluster-k88mp.dynamic.redhatworkshops.io/' # CHANGEME with the S3 public endpoint from your OCP cluster
+    - default: 'http://minio-fedora-detection.apps.CLUSTER_DOMAIN_NAME/' # CHANGEME with the S3 public endpoint from your OCP cluster
       name: S3_ENDPOINT_URL
       type: string
-    - default: 'https://github.com/adrien-legros/fedora-detection' # CHANGEME with the git repo url. It should be the gitea route endpoint from the full OCP cluster/
+    - default: 'https://gitea-ci-cd.apps.OCP_DOMAINE_NAME/data-scientist-1/fedora-detection' # CHANGEME with the git repo url. It should be the gitea route endpoint from the full OCP cluster/
       name: git_repository_url
       type: string
     - default: image-registry.openshift-image-registry:5000/ci-cd/edge-detection
@@ -37,7 +37,7 @@ spec:
         - name: depth
           value: '1'
         - name: sslVerify
-          value: 'true'
+          value: 'false'
         - name: deleteExisting
           value: 'true'
         - name: verbose

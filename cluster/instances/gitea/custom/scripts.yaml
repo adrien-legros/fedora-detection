@@ -33,7 +33,7 @@ data:
     MIGRATE_API_ENDPOINT=${GITEA_ENDPOINT}/api/v1/repos/migrate
     HOOK_API_ENDPOINT=${GITEA_ENDPOINT}/api/v1/repos/${OWNER}/${REPO}/hooks
     EL_ENDPOINT="http://el-ds-pipeline-trigger-listener.ci-cd.svc.cluster.local:8080"
-    ARM_BUILDER_EL_ENDPOINT="https://gitea-ci-cd.apps.cluster-fglzd.dynamic.redhatworkshops.io/" # CHANGEME with the event listener endpoint from SNO cluster
+    ARM_BUILDER_EL_ENDPOINT="https://el-push-to-edge-listener-ci-cd.apps.SNO_DOMAIN_NAME/" # CHANGEME with the event listener endpoint from SNO cluster
     # Clone git repo
     migrate_payload() {
         cat <<EOF
