@@ -73,6 +73,10 @@ oc kustomize ./cluster/instances/ --enable-helm | oc apply -f -
 # Wait for instances
 ```
 
+#### Jupyter Notebooks
+
+You have to manually provision and configure the jupyterlab environement. Follow [those steps](./doc/jupyter.md).
+
 ### The Single Node Openshift (SNO)
 
 #### Prerequisites
