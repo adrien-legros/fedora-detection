@@ -6,11 +6,7 @@ metadata:
   name: push-to-edge
 spec:
   params:
-  - name: GIT_REPO
-  - name: GIT_REVISION
-  - name: GIT_REPO_NAME
-  - name: GIT_REPO_FULL_NAME
-  - name: ISSUE_NB
+  - name: MODEL_VERSION_DIGEST
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
@@ -20,16 +16,8 @@ spec:
         app-name: push-to-edge
     spec:
       params:
-        - name: GIT_REPO
-          value: $(tt.params.GIT_REPO)
-        - name: GIT_REVISION
-          value: $(tt.params.GIT_REVISION)
-        - name: GIT_REPO_NAME
-          value: $(tt.params.GIT_REPO_NAME)
-        - name: GIT_REPO_FULL_NAME
-          value: $(tt.params.GIT_REPO_FULL_NAME)
-        - name: ISSUE_NB
-          value: $(tt.params.ISSUE_NB)
+        - name: MODEL_VERSION_DIGEST
+          value: $(tt.params.MODEL_VERSION_DIGEST)
       pipelineRef:
         name: push-to-edge
       serviceAccountName: pipeline

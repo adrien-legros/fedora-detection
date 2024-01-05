@@ -11,7 +11,7 @@ spec:
     interceptors:
     - params:
       - name: "eventTypes"
-        value: ["pull_request"]
+        value: ["push"]
       ref:
         apiVersion: triggers.tekton.dev
         kind: ClusterInterceptor
