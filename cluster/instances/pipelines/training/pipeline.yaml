@@ -14,7 +14,7 @@ spec:
       type: string
     - name: MINIO_PUBLIC_ENDPOINT
       type: string
-      default: https://minio-fedora-detection.apps.CLUSTER_DOMAIN_NAME # CHANGEME with your S3 public endpoint
+      default: https://minio-fedora-detection.apps.cluster-fglzd.dynamic.redhatworkshops.io # CHANGEME with your S3 public endpoint
     - name: BUCKET_NAME
       type: string
       default: fedora

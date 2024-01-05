@@ -12,7 +12,7 @@ data:
     echo "Creating buckets on minio alias ..."
     mc mb minio/fedora
     echo "Set public policy"
-    mcli anonymous set download minio/fedora
+    mc anonymous set download minio/fedora
     echo "Creation completed"
   push-model.sh: |-
     #!/usr/bin/env sh
