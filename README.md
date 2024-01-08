@@ -21,7 +21,7 @@ Leverage Openshift AI (RHOAI) to create and deploy anywhere a fedora detection m
 
 ## Architecture
 
-![full_arch](./flowchart/arch.png)
+![full_arch](./flowchart/full.png)
 
 ## Deployment
 
